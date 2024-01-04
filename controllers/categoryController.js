@@ -58,7 +58,6 @@ const updateCategory = [
 					{ name: reqName, },
 					{ where: { id: reqId }, returning: true }
 				);
-
 				res.status(200).json({
 					message: 'Data successfully updated',
 					data: {

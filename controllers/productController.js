@@ -1,7 +1,22 @@
 const Product = require('../models').Product;
-const { validationResult } = require('express-validator');
+const ProductAsset = require('../models').ProductAsset;
+const Category = require('../models').Category;
 const productValidator = require('../controllers/validators/productValidator');
+const { sequelize } = require('../models'); 
 let slug = require('slug');
+
+// const syncDatabase = async () => {
+// 	try {
+// 	  await sequelize.sync({ alter: true });
+// 	  console.log('Database synchronized successfully.');
+// 	} catch (error) {
+// 	  console.error('Error synchronizing database:', error);
+// 	} finally {
+// 	  process.exit(); // Keluar dari proses setelah selesai
+// 	}
+//   };
+  
+//   syncDatabase(); 
 
 const storeProduct = [
 	productValidator.validateStoreProduct,
@@ -10,7 +25,7 @@ const storeProduct = [
 			cleanName = req.body.name.replace(/[.\-\/]/g, ' ');
 			sluggedName = slug(cleanName);
 			const data = await Product.create({
-				categoryId: req.body.categoryId,
+				category_id: req.body.category_id,
 				name: req.body.name,
 				slug: sluggedName,
 				price: req.body.price,
@@ -33,15 +48,18 @@ const storeProduct = [
 
 const getProduct = async (req, res) => {
 	try {
-		const getDatas = await Product.findAll();
+		const getDatas = await Product.findAll({
+			attributes: ['category_id','name', 'slug', 'price'],
+			include: [
+				{ model: Category, as: 'category', attributes: ['name'] },
+				{ model: ProductAsset, as: 'productAssets', attributes: ['product_id', 'image'] },
+			],
+			order: [['price', req.params.byPrice]]
+		  });
 		if (getDatas) {
-			const data = getDatas.map(item => ({
-				name: item.name,
-				price: item.price,
-			}));
 			res.status(200).json({
 				message: 'Data successfully retrieved',
-				data: data,
+				data: getDatas,
 			});
 		} else {
 			res.status(404).json({
@@ -63,8 +81,8 @@ const updateProduct = [
 			data = await Product.findOne({ where: { id: req.params.id } });
 			if (data) {
 				const reqId = req.params.id;
-				const reqName = req.body.name;
-				const reqPrice = req.body.price;
+				const reqName = req.body.name || data.name;
+				const reqPrice = req.body.price || data.price;
 
 				cleanName = reqName.replace(/[.\-\/]/g, ' ');
 				sluggedName = slug(cleanName);
