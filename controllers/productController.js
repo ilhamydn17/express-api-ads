@@ -2,21 +2,21 @@ const Product = require('../models').Product;
 const ProductAsset = require('../models').ProductAsset;
 const Category = require('../models').Category;
 const productValidator = require('../controllers/validators/productValidator');
-const { sequelize } = require('../models'); 
+const { sequelize } = require('../models');
 let slug = require('slug');
 
-// const syncDatabase = async () => {
-// 	try {
-// 	  await sequelize.sync({ alter: true });
-// 	  console.log('Database synchronized successfully.');
-// 	} catch (error) {
-// 	  console.error('Error synchronizing database:', error);
-// 	} finally {
-// 	  process.exit(); // Keluar dari proses setelah selesai
-// 	}
-//   };
-  
-//   syncDatabase(); 
+const syncDatabase = async () => {
+	try {
+		await sequelize.sync({ alter: true });
+		console.log('Database synchronized successfully.');
+	} catch (error) {
+		console.error('Error synchronizing database:', error);
+	} finally {
+		process.exit(); // Keluar dari proses setelah selesai
+	}
+};
+
+// syncDatabase();
 
 const storeProduct = [
 	productValidator.validateStoreProduct,
@@ -49,13 +49,17 @@ const storeProduct = [
 const getProduct = async (req, res) => {
 	try {
 		const getDatas = await Product.findAll({
-			attributes: ['category_id','name', 'slug', 'price'],
+			attributes: ['category_id', 'name', 'slug', 'price'],
 			include: [
 				{ model: Category, as: 'category', attributes: ['name'] },
-				{ model: ProductAsset, as: 'productAssets', attributes: ['product_id', 'image'] },
+				{
+					model: ProductAsset,
+					as: 'productAssets',
+					attributes: ['product_id', 'image'],
+				},
 			],
-			order: [['price', req.params.byPrice]]
-		  });
+			order: [['price', req.params.byPrice]],
+		});
 		if (getDatas) {
 			res.status(200).json({
 				message: 'Data successfully retrieved',
@@ -89,16 +93,16 @@ const updateProduct = [
 
 				const updatedProduct = await data.update(
 					{ name: reqName, slug: sluggedName, price: reqPrice },
-					{ where: { id: reqId }, returning: true }
-                );
-                
+					{ where: { id: reqId } }
+				);
+
 				res.status(200).json({
 					message: 'Data successfully updated',
 					data: {
 						name: data.name,
 						price: data.price,
 					},
-				})
+				});
 			} else {
 				res.status(404).json({
 					message: 'Data not found',
@@ -114,28 +118,28 @@ const updateProduct = [
 ];
 
 const destroyProduct = async (req, res) => {
-		try {
-			const isDelete = await Product.destroy({ where: { id: req.params.id } });
-			if (isDelete) {
-				res.status(204).json({
-					message: 'Data successfully deleted',
-				});
-			} else {
-				res.status(404).json({
-					message: 'Data not found',
-				});
-			}
-		} catch (error) {
-			console.error(error);
-			res.status(500).json({
-				message: 'Failed to retrieve data',
+	try {
+		const isDelete = await Product.destroy({ where: { id: req.params.id } });
+		if (isDelete) {
+			res.status(204).json({
+				message: 'Data successfully deleted',
+			});
+		} else {
+			res.status(404).json({
+				message: 'Data not found',
 			});
 		}
+	} catch (error) {
+		console.error(error);
+		res.status(500).json({
+			message: 'Failed to retrieve data',
+		});
 	}
+};
 
 module.exports = {
 	storeProduct,
 	getProduct,
-    updateProduct,
-    destroyProduct
+	updateProduct,
+	destroyProduct,
 };
