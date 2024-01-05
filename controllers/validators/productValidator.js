@@ -11,5 +11,4 @@ const validateUpdateProduct = validate([
     body('price').optional().isInt().withMessage('Price must be a number'),
 ])
 
-
 module.exports = {validateStoreProduct, validateUpdateProduct}

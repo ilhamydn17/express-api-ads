@@ -71,7 +71,8 @@ const updateProduct = [
 		try {
 			data = await Product.findOne({ where: { id: req.params.id } });
 			if (data) {
-				const reqId = req.params.id;
+				const reqId = req.params.id
+				const categoryId = req.body.category_id || data.category_id
 				const reqName = req.body.name || data.name;
 				const reqPrice = req.body.price || data.price;
 
@@ -79,7 +80,7 @@ const updateProduct = [
 				sluggedName = slug(cleanName);
 
 				const updatedProduct = await data.update(
-					{ name: reqName, slug: sluggedName, price: reqPrice },
+					{ category_id: categoryId, name: reqName, slug: sluggedName, price: reqPrice },
 					{ where: { id: reqId } }
 				);
 
