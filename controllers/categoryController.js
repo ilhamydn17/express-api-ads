@@ -1,6 +1,6 @@
 const Category = require('../models').Category;
 const { validationResult } = require('express-validator');
-const categoryValidator = require('./validators/CategoryValidator');
+const categoryValidator = require('./validators/categoryValidator');
 
 const storeCategory = [
 	categoryValidator.validateStoreCategory,

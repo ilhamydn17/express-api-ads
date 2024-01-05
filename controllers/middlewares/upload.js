@@ -9,7 +9,8 @@ const storage = multer.diskStorage({
 	filename: (req, file, cb) => {
 		const ext = file.originalname.split('.').pop().toLowerCase();
 		const sluggedName = slug(file.originalname.slice(0, -ext.length));
-		const fileName = `${sluggedName}.${ext}`;
+		const randomNum = Math.floor(Math.random() * (999 - 100 + 1) + 100);
+		const fileName = `${randomNum}-${sluggedName}.${ext}`;
 		
 		const validExtension = ['jpg', 'jpeg', 'png'];
 		if (!validExtension.includes(ext)) {

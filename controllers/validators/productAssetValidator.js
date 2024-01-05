@@ -10,7 +10,6 @@ const validateStoreProductAsset = validate([
             return true
         }
     )
-    // inputan yang lain ...
 ])
 
 const validateUpdateProductAsset = validate([

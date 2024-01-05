@@ -5,19 +5,6 @@ const productValidator = require('../controllers/validators/productValidator');
 const { sequelize } = require('../models');
 let slug = require('slug');
 
-const syncDatabase = async () => {
-	try {
-		await sequelize.sync({ alter: true });
-		console.log('Database synchronized successfully.');
-	} catch (error) {
-		console.error('Error synchronizing database:', error);
-	} finally {
-		process.exit(); // Keluar dari proses setelah selesai
-	}
-};
-
-// syncDatabase();
-
 const storeProduct = [
 	productValidator.validateStoreProduct,
 	async (req, res) => {

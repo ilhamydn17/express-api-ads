@@ -5,19 +5,19 @@ const handleCategory = require('../controllers/categoryController');
 const handleProduct = require('../controllers/productController');
 const handleProductAsset = require('../controllers/productAssetController');
 
-// endpoin category
+// endpoin category <-
 route.post('/category', handleCategory.storeCategory);
 route.get('/category', handleCategory.getCategories);
 route.put('/category/:id', handleCategory.updateCategory);
 route.delete('/category/:id', handleCategory.destroyCategory);
 
-// endpoint product
+// endpoint product <-
 route.post('/product', handleProduct.storeProduct);
 route.get('/product/:byPrice', handleProduct.getProduct);
 route.put('/product/:id', handleProduct.updateProduct);
 route.delete('/product/:id', handleProduct.destroyProduct);
 
-// endpoint asset product
+// endpoint asset product <-
 route.post(
 	'/product-asset',
 	(req, res, next) => {

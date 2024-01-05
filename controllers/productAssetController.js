@@ -10,11 +10,11 @@ const path = require('path');
 const storeProductAsset = [
 	productAssetValidator.validateStoreProductAsset,
 	async (req, res) => {
-		console.log(req.file)
+		console.log(req.file);
 		try {
 			const productId = req.body.product_id;
 			const fileName = req.file.filename;
-	
+
 			const data = await ProductAsset.create({
 				product_id: productId,
 				image: fileName,
@@ -23,7 +23,7 @@ const storeProductAsset = [
 				message: 'Data successfully created',
 				data: {
 					product_id: data.product_id,
-					image: data.image
+					image: data.image,
 				},
 			});
 		} catch (error) {
@@ -32,17 +32,15 @@ const storeProductAsset = [
 				message: 'Failed to insert data',
 			});
 		}
-	}
-]
+	},
+];
 
 const getProductAsset = async (req, res) => {
 	try {
 		const getDatas = await ProductAsset.findAll({
-			attributes: ['product_id','image',],
-			include: [
-				{ model: Product, as: 'product', attributes: ['name'] },
-			],
-		  });
+			attributes: ['product_id', 'image'],
+			include: [{ model: Product, as: 'product', attributes: ['name'] }],
+		});
 		if (getDatas) {
 			res.status(200).json({
 				message: 'Data successfully retrieved',
@@ -60,7 +58,6 @@ const getProductAsset = async (req, res) => {
 		});
 	}
 };
-	
 
 const updateProductAsset = [
 	productAssetValidator.validateUpdateProductAsset,
@@ -68,21 +65,19 @@ const updateProductAsset = [
 		try {
 			data = await ProductAsset.findOne({ where: { id: req.params.id } });
 			if (data) {
-				// mencari data gambar yang sudah ada/diupload di folder assets/images untuk dihapus terlebih dahulu
 				const oldImage = data.image;
 				const imagePath = path.join('assets', 'images', oldImage);
-				// menghapus gambar yang lama
-				if (req.file.filename != oldImage) {
-					fs.unlink(imagePath, async err => {
-						if (err && err.code !== 'ENOENT') {
-							console.error(err);
-							res.status(500).json({
-								message: 'Failed to update data',
-							});
-							return;
-						}
-					});
-				}
+
+				fs.unlink(imagePath, async err => {
+					if (err && err.code !== 'ENOENT') {
+						console.error(err);
+						res.status(500).json({
+							message: 'Failed to update data',
+						});
+						return;
+					}
+				})
+
 				const reqId = req.params.id;
 				const image = req.file.filename;
 				const updatedCategory = await data.update(
@@ -113,10 +108,12 @@ const destroyProductAsset = async (req, res) => {
 	try {
 		isFound = await ProductAsset.findOne({ where: { id: req.params.id } });
 		if (isFound) {
-			oldImage = isFound.image
-			const destroy = await ProductAsset.destroy({ where: { id: req.params.id } });
+			oldImage = isFound.image;
+			const destroy = await ProductAsset.destroy({
+				where: { id: req.params.id },
+			});
 
-			// menghapus gambar yang 
+			// menghapus gambar yang
 			const imagePath = path.join('assets', 'images', oldImage);
 			fs.unlink(imagePath, async err => {
 				if (err && err.code !== 'ENOENT') {

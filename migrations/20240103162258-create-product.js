@@ -3,19 +3,6 @@
 const { sequelize } = require('../models');
 const { QueryInterface } = require('sequelize');
 
-const isMigration = process.env.NODE_ENV === 'migration';
-
-const syncDatabase = async () => {
-	try {
-		await sequelize.sync({ alter: true });
-		console.log('Database synchronized successfully.');
-	} catch (error) {
-		console.error('Error synchronizing database:', error);
-	} finally {
-		process.exit(); // Keluar dari proses setelah selesai
-	}
-};
-
 module.exports = {
 	async up(queryInterface, Sequelize) {
 		await queryInterface.createTable('products', {
@@ -50,12 +37,7 @@ module.exports = {
 				allowNull: true,
 				type: Sequelize.DATE,
 			},
-		});
-
-    if (isMigration) {
-      // Jika sedang dalam proses migrasi, jalankan syncDatabase()
-      await syncDatabase();
-    }
+		})
 
 	},
 	async down(queryInterface, Sequelize) {
