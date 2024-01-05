@@ -78,10 +78,11 @@ const updateProductAsset = [
 					}
 				})
 
-				const reqId = req.params.id;
-				const image = req.file.filename;
+				const reqId = req.params.id
+				const productId = req.body.product_id || data.product_id
+				const image = req.file.filename
 				const updatedCategory = await data.update(
-					{ image: image },
+					{ product_id: productId,image: image },
 					{ where: { id: reqId }, returning: true }
 				);
 				res.status(200).json({
